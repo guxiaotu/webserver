@@ -74,30 +74,6 @@ class WebServer(BaseHTTPRequestHandler):
         with open(file_path, "rb") as f:
             self.wfile.write(f.read())
 
-    def _render_template(
-            self,
-            template_name: Template,
-            func_csv: Callable[[str], list[dict]],
-            csv_name: str,
-    ):
-        """
-        渲染 Jinja2 模板，读取 CSV 数据并将其传递给模板，生成 HTML 响应。
-        1. 调用 func_csv 函数读取 CSV 数据，返回一个列表字典
-        2. 使用 Jinja2 环境加载指定的模板文件
-        3. 将 CSV 数据传递给模板进行渲染，生成 HTML 内容
-        4. 发送 HTTP 响应头，设置状态码为 200，设置 Content-Type 为 text/html
-        5. 将渲染后的 HTML 内容写入响应体
-        :param func_csv:
-        :param template_name:
-        :return:
-        """
-        data = func_csv(csv_name)
-        html = env.get_template(template_name).render(data=data)
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.end_headers()
-        self.wfile.write(html.encode())
-
     def do_GET(self):
         """
         处理 GET 请求，根据请求路径匹配路由，调用相应的处理方法，或者返回 404 错误。
@@ -146,6 +122,30 @@ class WebServer(BaseHTTPRequestHandler):
 
             case _:
                 self.send_error(404)
+
+    def _render_template(
+            self,
+            func_csv: Callable[[str], list[dict]],
+            csv_name: str,
+            template_name: Template,
+    ):
+        """
+        渲染 Jinja2 模板，读取 CSV 数据并将其传递给模板，生成 HTML 响应。
+        1. 调用 func_csv 函数读取 CSV 数据，返回一个列表字典
+        2. 使用 Jinja2 环境加载指定的模板文件
+        3. 将 CSV 数据传递给模板进行渲染，生成 HTML 内容
+        4. 发送 HTTP 响应头，设置状态码为 200，设置 Content-Type 为 text/html
+        5. 将渲染后的 HTML 内容写入响应体
+        :param func_csv:
+        :param template_name:
+        :return:
+        """
+        data = func_csv(csv_name)
+        html = env.get_template(template_name).render(data=data)
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(html.encode())
 
 
 if __name__ == "__main__":

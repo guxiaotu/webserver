@@ -13,5 +13,4 @@ def read_data(path: Path) -> list[dict]:
     3. pandas 会自动推断类型（int/float），前端用 Number() 统一处理
     :return:
     """
-    df = pd.read_csv(path)
-    return df.to_dict("records")
+    return pd.read_csv(path).to_dict("records")
