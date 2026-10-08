@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机壳类目分析 · 导航页</title>
+    <style>
+        :root {
+            --bg1: #0c1018;
+            --bg2: #111827;
+            --panel: rgba(22, 29, 45, .72);
+            --panel-h: #161d2d;
+            --line: rgba(38, 49, 74, .9);
+            --txt: #e6ebf5;
+            --sub: #8c9ab2;
+            --acc: #4f8cff;
+            --acc2: #22c58b;
+            --warn: #ffb020;
+            --pink: #ff6b9d;
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html, body {
+            min-height: 100%
+        }
+
+        body {
+            background: radial-gradient(1200px 600px at 12% -8%, rgba(79, 140, 255, .18), transparent 60%),
+            radial-gradient(900px 520px at 88% 8%, rgba(255, 107, 157, .14), transparent 60%),
+            radial-gradient(1000px 700px at 50% 115%, rgba(34, 197, 139, .14), transparent 60%),
+            linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg1));
+            color: var(--txt);
+            font-family: "WenQuanYi Micro Hei", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+            padding: 0 20px 60px;
+            overflow-x: hidden;
+        }
+
+        /* 星点背景 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: radial-gradient(1px 1px at 12% 22%, rgba(255, 255, 255, .55), transparent 60%),
+            radial-gradient(1.5px 1.5px at 28% 62%, rgba(255, 255, 255, .5), transparent 60%),
+            radial-gradient(1px 1px at 44% 14%, rgba(255, 255, 255, .45), transparent 60%),
+            radial-gradient(1px 1px at 63% 74%, rgba(255, 255, 255, .5), transparent 60%),
+            radial-gradient(1.5px 1.5px at 78% 32%, rgba(255, 255, 255, .5), transparent 60%),
+            radial-gradient(1px 1px at 90% 84%, rgba(255, 255, 255, .45), transparent 60%),
+            radial-gradient(1px 1px at 8% 88%, rgba(255, 255, 255, .5), transparent 60%),
+            radial-gradient(1.5px 1.5px at 52% 46%, rgba(255, 255, 255, .35), transparent 60%);
+            animation: tw 9s ease-in-out infinite alternate;
+        }
+
+        @keyframes tw {
+            from {
+                opacity: .75
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        /* 顶部导航 */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 22px 0 14px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 56px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 650;
+            letter-spacing: .3px;
+        }
+
+        .logo .dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            flex: none;
+            background: conic-gradient(from 210deg, var(--acc), var(--acc2), var(--pink), var(--acc));
+            box-shadow: 0 4px 14px rgba(79, 140, 255, .35);
+        }
+
+        .topnav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .topnav a {
+            color: var(--sub);
+            text-decoration: none;
+            font-size: 13.5px;
+            padding: 7px 14px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            transition: .2s;
+        }
+
+        .topnav a:hover {
+            color: #fff;
+            border-color: var(--acc);
+            background: rgba(79, 140, 255, .1);
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 52px;
+        }
+
+        .hero .kicker {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--sub);
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            line-height: 1.2;
+            margin-bottom: 6px;
+            background: linear-gradient(92deg, #fff 8%, #b9c6e0 55%, #8f9fc2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 em {
+            font-style: normal;
+            background: linear-gradient(92deg, var(--acc), var(--acc2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--sub);
+            font-size: 15.5px;
+            max-width: 640px;
+            margin: 16px auto 0;
+            line-height: 1.8;
+        }
+
+        .hero p b {
+            color: var(--txt);
+            font-weight: 600;
+        }
+
+        /* 卡片网格 */
+        .grid {
+            display: grid;
+            grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 340px;
+            padding: 30px 30px 26px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: inherit;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: transform .28s cubic-bezier(.2, .7, .3, 1), border-color .28s, box-shadow .28s;
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity .3s;
+            background: radial-gradient(520px 220px at var(--mx, 50%) var(--my, 0%), rgba(79, 140, 255, .14), transparent 70%);
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            border-color: rgba(79, 140, 255, .55);
+            box-shadow: 0 24px 60px -22px rgba(0, 0, 0, .8), 0 0 0 1px rgba(79, 140, 255, .15);
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card .ic {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card.ind .ic {
+            background: linear-gradient(140deg, rgba(79, 140, 255, .22), rgba(79, 140, 255, .05));
+            box-shadow: inset 0 0 0 1px rgba(79, 140, 255, .35);
+        }
+
+        .card.rev .ic {
+            background: linear-gradient(140deg, rgba(255, 107, 157, .22), rgba(255, 107, 157, .05));
+            box-shadow: inset 0 0 0 1px rgba(255, 107, 157, .35);
+        }
+
+        .card h2 {
+            font-size: 21px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card .lead {
+            color: var(--sub);
+            font-size: 14px;
+            line-height: 1.75;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card .kpis {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card .mini {
+            flex: 1 1 78px;
+            min-width: 78px;
+            background: rgba(11, 16, 32, .5);
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 9px 10px;
+        }
+
+        .card .mini .k {
+            font-size: 10.5px;
+            color: var(--sub);
+            margin-bottom: 3px;
+        }
+
+        .card .mini .v {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .card .mini .v.s {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .card .foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13.5px;
+            color: var(--sub);
+            position: relative;
+            z-index: 1;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .card .arr {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--acc);
+            font-weight: 600;
+        }
+
+        .card .arr svg {
+            width: 16px;
+            height: 16px;
+            transition: transform .25s;
+        }
+
+        .card:hover .arr svg {
+            transform: translateX(5px);
+        }
+
+        .card .path {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 11.5px;
+            color: #5f6d85;
+        }
+
+        .summary {
+            margin-top: 46px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 26px 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary h3 {
+            font-size: 15px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .summary h3 i {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(var(--acc), var(--acc2));
+            border-radius: 2px;
+        }
+
+        .summary ul {
+            list-style: none;
+            display: grid;
+            gap: 11px;
+        }
+
+        .summary li {
+            display: flex;
+            gap: 12px;
+            color: var(--sub);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .summary li .n {
+            flex: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            background: rgba(79, 140, 255, .12);
+            color: var(--acc);
+            font-size: 12px;
+            font-weight: 700;
+            display: grid;
+            place-items: center;
+        }
+
+        .summary li b {
+            color: var(--txt);
+            font-weight: 600;
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: var(--sub);
+            font-size: 12.5px;
+            margin-top: 48px;
+            line-height: 1.9;
+        }
+
+        footer b {
+            color: #c3cee0;
+        }
+
+        .kbd {
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: 11.5px;
+            color: #5f6d85;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            padding: 1px 6px;
+        }
+
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .card {
+                min-height: 0;
+                padding: 26px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="topbar">
+        <div class="logo"><span class="dot"></span>手机壳类目分析</div>
+        <nav class="topnav">
+            <a href="/industry">行业看板</a>
+            <a href="/review">评论分析</a>
+        </nav>
+    </div>
+
+    <div class="hero">
+        <span class="kicker">Phone Case Category · Insight Deck</span>
+        <h1>一份数据，<em>两个视角</em><br>看懂手机壳类目</h1>
+        <p>从 <b>行业侧</b>看价格、品牌与供给节奏，从 <b>用户侧</b>看差评痛点与好评卖点。
+            两份看板打通"市场在卖什么"与"用户到底在意什么"。</p>
+    </div>
+
+    <div class="grid">
+
+        <!-- 行业卡片 -->
+        <a class="card ind" href="/industry">
+            <div class="ic">📊</div>
+            <h2>行业分析看板</h2>
+            <p class="lead">覆盖 <b>171 款</b>样本、<b>63 个品牌</b>。从价格带分布、品牌集中度、上架时间三个维度刻画竞争格局与供给节奏。
+            </p>
+            <div class="kpis">
+                <div class="mini">
+                    <div class="k">样本商品</div>
+                    <div class="v">171</div>
+                </div>
+                <div class="mini">
+                    <div class="k">月销总量</div>
+                    <div class="v s">191.8万</div>
+                </div>
+                <div class="mini">
+                    <div class="k">TOP5 份额</div>
+                    <div class="v">57.8%</div>
+                </div>
+            </div>
+            <div class="foot">
+                <span class="arr">进入看板 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                                stroke-linecap="round" stroke-linejoin="round"><path
+                        d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+                <span class="path">/industry</span>
+            </div>
+        </a>
+
+        <!-- 评论卡片 -->
+        <a class="card rev" href="/review">
+            <div class="ic">💬</div>
+            <h2>评论主题分析</h2>
+            <p class="lead">按 <b>negative / motivation / positive</b> 三类主题聚合，共 <b>883 条</b>主题匹配。定位用户不满、购买动因与正向口碑。
+            </p>
+            <div class="kpis">
+                <div class="mini">
+                    <div class="k">负面匹配</div>
+                    <div class="v">216</div>
+                </div>
+                <div class="mini">
+                    <div class="k">最大痛点</div>
+                    <div class="v s">耐用</div>
+                </div>
+                <div class="mini">
+                    <div class="k">最大卖点</div>
+                    <div class="v">耐久</div>
+                </div>
+            </div>
+            <div class="foot">
+                <span class="arr">进入看板 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                                                stroke-linecap="round" stroke-linejoin="round"><path
+                        d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+                <span class="path">/review</span>
+            </div>
+        </a>
+
+    </div>
+
+    <div class="summary">
+        <h3><i></i>怎么用这两份看板</h3>
+        <ul>
+            <li><span class="n">1</span><span><b>定市场空间：</b>先看行业看板价格带分布，5–15 美元是供给最密集区间，≥40 美元与 20–25 美元存在客单价红利。</span>
+            </li>
+            <li><span class="n">2</span><span><b>定竞争格局：</b>TOP5 占 57.8% 销量、61.7% GMV，品牌集中度高，头部溢价能力强。</span>
+            </li>
+            <li><span class="n">3</span><span><b>找产品痛点：</b>评论看板中"做工与耐用性"占负面 26.29%，是最主要差评来源，对应正向卖点恰好也是"耐久性"。</span>
+            </li>
+            <li><span class="n">4</span><span><b>做差异化决策：</b>耐久可靠性是同时出现在最大痛点与最大卖点的变量，是最值得投入的产品差异化方向。</span>
+            </li>
+        </ul>
+    </div>
+
+    <footer>
+        相对路径跳转：<span class="kbd">/industry</span> → 行业分析 ｜ <span class="kbd">/review</span> → 评论主题分析<br>
+        <b>部署提示：</b>静态文件需放在站点根目录下，使 <b>/industry</b> 与 <b>/review</b> 能分别命中对应 HTML（如 Nginx 配置
+        try_files，或 Flask 用 <span class="kbd">url_for('static',...)</span> 生成路径）。
+    </footer>
+
+</div>
+
+<script>
+    // 卡片光晕跟随鼠标
+    document.querySelectorAll('.card').forEach(function (c) {
+        c.addEventListener('mousemove', function (e) {
+            var r = c.getBoundingClientRect();
+            c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+            c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        });
+    });
+</script>
+</body>
+</html>

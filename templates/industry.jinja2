@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机壳类目行业分析看板</title>
+    <script src="/static/js/echarts.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f1420;
+            --panel: #161d2d;
+            --panel2: #1b2437;
+            --line: #26314a;
+            --txt: #e6ebf5;
+            --sub: #8c9ab2;
+            --acc: #4f8cff;
+            --acc2: #22c58b;
+            --warn: #ffb020;
+            --pink: #ff6b9d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: linear-gradient(160deg, #0c1018, #111827 60%, #0c1018);
+            color: var(--txt);
+            font-family: "WenQuanYi Micro Hei", "Microsoft YaHei", system-ui, sans-serif;
+            padding: 28px 20px 60px
+        }
+
+        .wrap {
+            max-width: 1240px;
+            margin: 0 auto
+        }
+
+        header {
+            display: flex;
+            align-items: flex-end;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 6px
+        }
+
+        h1 {
+            font-size: 26px;
+            letter-spacing: .5px
+        }
+
+        .tag {
+            color: var(--sub);
+            font-size: 13px;
+            padding: 3px 10px;
+            border: 1px solid var(--line);
+            border-radius: 20px
+        }
+
+        .desc {
+            color: var(--sub);
+            font-size: 13.5px;
+            margin: 8px 0 24px;
+            line-height: 1.7
+        }
+
+        .desc b {
+            color: var(--txt)
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns:repeat(auto-fit, minmax(168px, 1fr));
+            gap: 14px;
+            margin-bottom: 26px
+        }
+
+        .kpi {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .kpi::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--acc)
+        }
+
+        .kpi.g::before {
+            background: var(--acc2)
+        }
+
+        .kpi.o::before {
+            background: var(--warn)
+        }
+
+        .kpi.p::before {
+            background: var(--pink)
+        }
+
+        .kpi .k {
+            color: var(--sub);
+            font-size: 12.5px;
+            margin-bottom: 7px
+        }
+
+        .kpi .v {
+            font-size: 23px;
+            font-weight: 700
+        }
+
+        .kpi .u {
+            font-size: 12px;
+            color: var(--sub);
+            margin-left: 3px;
+            font-weight: 400
+        }
+
+        .kpi .n {
+            color: var(--sub);
+            font-size: 11.5px;
+            margin-top: 5px
+        }
+
+        section {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 20px 20px 12px;
+            margin-bottom: 22px
+        }
+
+        .h {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px
+        }
+
+        .h i {
+            width: 4px;
+            height: 17px;
+            background: var(--acc);
+            border-radius: 2px
+        }
+
+        .h h2 {
+            font-size: 17px
+        }
+
+        .sub {
+            color: var(--sub);
+            font-size: 12.5px;
+            margin: 2px 0 14px 14px
+        }
+
+        .chart {
+            width: 100%;
+            height: 400px
+        }
+
+        .chart.tall {
+            height: 520px
+        }
+
+        .chart.short {
+            height: 340px
+        }
+
+        .twocol {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 16px
+        }
+
+        @media (max-width: 900px) {
+            .twocol {
+                grid-template-columns:1fr
+            }
+        }
+
+        .note {
+            color: var(--sub);
+            font-size: 12px;
+            line-height: 1.75;
+            margin: 10px 2px 4px
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px
+        }
+
+        th, td {
+            padding: 9px 8px;
+            text-align: right;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap
+        }
+
+        th:first-child, td:first-child {
+            text-align: left
+        }
+
+        th {
+            color: var(--sub);
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+            position: sticky;
+            top: 0;
+            background: var(--panel)
+        }
+
+        th:hover {
+            color: var(--acc)
+        }
+
+        tbody tr:hover {
+            background: var(--panel2)
+        }
+
+        .bar {
+            display: inline-block;
+            height: 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-left: 6px;
+            background: var(--acc);
+            opacity: .8
+        }
+
+        .scroll {
+            max-height: 480px;
+            overflow: auto;
+            border-radius: 10px
+        }
+
+        footer {
+            color: var(--sub);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 30px;
+            line-height: 1.8
+        }
+
+        .hl {
+            color: var(--warn)
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>手机壳类目行业分析看板</h1>
+        <span class="tag">行业洞察</span>
+        <span class="tag">样本 171 款</span>
+        <span class="tag">63 个品牌</span>
+    </header>
+    <p class="desc">
+        数据覆盖 <b>171 款</b>样本、<b>63 个品牌</b>。看板从
+        <b>价格带分布</b>、<b>品牌集中度</b>、<b>上架时间分布</b>三个维度刻画竞争格局与供给节奏，点击表头可排序，图表支持悬停查看明细。
+    </p>
+
+    <div class="kpis">
+        <div class="kpi">
+            <div class="k">样本商品数</div>
+            <div class="v">171<span class="u">款</span></div>
+            <div class="n">覆盖全部价格档位</div>
+        </div>
+        <div class="kpi g">
+            <div class="k">月销总量</div>
+            <div class="v">1,918,147</div>
+            <div class="n">全样本合计</div>
+        </div>
+        <div class="kpi g">
+            <div class="k">月GMV</div>
+            <div class="v">$31,964,826</div>
+            <div class="n">客单价加权</div>
+        </div>
+        <div class="kpi o">
+            <div class="k">5–25美元占比</div>
+            <div class="v">77.2<span class="u">%</span></div>
+            <div class="n">核心价格带商品</div>
+        </div>
+        <div class="kpi p">
+            <div class="k">TOP5 销量份额</div>
+            <div class="v">57.8<span class="u">%</span></div>
+            <div class="n">品牌高度集中</div>
+        </div>
+        <div class="kpi p">
+            <div class="k">TOP5 GMV 份额</div>
+            <div class="v">61.7<span class="u">%</span></div>
+            <div class="n">头部更赚钱</div>
+        </div>
+    </div>
+
+    <!-- 价格分布 -->
+    <section>
+        <div class="h"><i></i>
+            <h2>一、价格带分布</h2></div>
+        <p class="sub">商品数、月销量、月GMV、均价与评分在各价格档位的分布</p>
+        <div class="twocol">
+            <div id="c_price_bar" class="chart"></div>
+            <div id="c_price_share" class="chart"></div>
+        </div>
+        <div id="c_price_mix" class="chart short" style="margin-top:8px"></div>
+        <p class="note">
+            <span class="hl">要点：</span>5–15 美元档贡献了过半商品与近半数月销量，是供给最密集、竞争最充分的价格带；
+            ≥40 美元及 20–25 美元档虽商品数不多，但 GMV 份额显著抬升，说明高价区间的客单价红利与溢价能力更强。
+        </p>
+    </section>
+
+    <!-- 品牌集中度 -->
+    <section>
+        <div class="h"><i></i>
+            <h2>二、品牌集中度</h2></div>
+        <p class="sub">按销量与 GMV 排序的品牌份额结构，以及累计占比曲线</p>
+        <div id="c_brand_cum" class="chart"></div>
+        <div class="twocol" style="margin-top:14px">
+            <div id="c_brand_share" class="chart tall"></div>
+            <div>
+                <div id="c_brand_scatter" class="chart tall"></div>
+            </div>
+        </div>
+        <div class="scroll">
+            <table id="brand_table">
+                <thead>
+                <tr>
+                    <th data-k="name">品牌</th>
+                    <th data-k="sales_rank">销量排名</th>
+                    <th data-k="sales">月销量</th>
+                    <th data-k="sales_share">销量份额%</th>
+                    <th data-k="revenue">月GMV</th>
+                    <th data-k="revenue_share">GMV份额%</th>
+                    <th data-k="revenue_rank">GMV排名</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td>OtterBox</td>
+                    <td>1</td>
+                    <td>275,734</td>
+                    <td>14.38<span class="bar" style="width:57.5px"></span></td>
+                    <td>$8,164,484</td>
+                    <td>25.3<span class="bar" style="width:101.2px;background:var(--acc2)"></span></td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>FNTCASE</td>
+                    <td>2</td>
+                    <td>267,160</td>
+                    <td>13.93<span class="bar" style="width:55.7px"></span></td>
+                    <td>$3,060,763</td>
+                    <td>9.48<span class="bar" style="width:37.9px;background:var(--acc2)"></span></td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>SUPFINE</td>
+                    <td>3</td>
+                    <td>210,021</td>
+                    <td>10.95<span class="bar" style="width:43.8px"></span></td>
+                    <td>$2,098,110</td>
+                    <td>6.5<span class="bar" style="width:26.0px;background:var(--acc2)"></span></td>
+                    <td>5</td>
+                </tr>
+
+                <tr>
+                    <td>ESR</td>
+                    <td>4</td>
+                    <td>187,129</td>
+                    <td>9.76<span class="bar" style="width:39.0px"></span></td>
+                    <td>$3,002,797</td>
+                    <td>9.3<span class="bar" style="width:37.2px;background:var(--acc2)"></span></td>
+                    <td>4</td>
+                </tr>
+
+                <tr>
+                    <td>Miracase</td>
+                    <td>5</td>
+                    <td>168,544</td>
+                    <td>8.79<span class="bar" style="width:35.2px"></span></td>
+                    <td>$3,596,729</td>
+                    <td>11.14<span class="bar" style="width:44.6px;background:var(--acc2)"></span></td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td>Spigen</td>
+                    <td>6</td>
+                    <td>96,586</td>
+                    <td>5.04<span class="bar" style="width:20.2px"></span></td>
+                    <td>$1,671,728</td>
+                    <td>5.18<span class="bar" style="width:20.7px;background:var(--acc2)"></span></td>
+                    <td>7</td>
+                </tr>
+
+                <tr>
+                    <td>SuydanBox</td>
+                    <td>7</td>
+                    <td>76,641</td>
+                    <td>4.0<span class="bar" style="width:16.0px"></span></td>
+                    <td>$1,102,864</td>
+                    <td>3.42<span class="bar" style="width:13.7px;background:var(--acc2)"></span></td>
+                    <td>8</td>
+                </tr>
+
+                <tr>
+                    <td>jaroco</td>
+                    <td>8</td>
+                    <td>73,317</td>
+                    <td>3.82<span class="bar" style="width:15.3px"></span></td>
+                    <td>$989,046</td>
+                    <td>3.06<span class="bar" style="width:12.2px;background:var(--acc2)"></span></td>
+                    <td>9</td>
+                </tr>
+
+                <tr>
+                    <td>TAURI</td>
+                    <td>9</td>
+                    <td>68,040</td>
+                    <td>3.55<span class="bar" style="width:14.2px"></span></td>
+                    <td>$497,826</td>
+                    <td>1.54<span class="bar" style="width:6.2px;background:var(--acc2)"></span></td>
+                    <td>12</td>
+                </tr>
+
+                <tr>
+                    <td>JETech</td>
+                    <td>10</td>
+                    <td>67,760</td>
+                    <td>3.53<span class="bar" style="width:14.1px"></span></td>
+                    <td>$707,599</td>
+                    <td>2.19<span class="bar" style="width:8.8px;background:var(--acc2)"></span></td>
+                    <td>11</td>
+                </tr>
+
+                <tr>
+                    <td>TORRAS</td>
+                    <td>11</td>
+                    <td>59,618</td>
+                    <td>3.11<span class="bar" style="width:12.4px"></span></td>
+                    <td>$1,672,881</td>
+                    <td>5.18<span class="bar" style="width:20.7px;background:var(--acc2)"></span></td>
+                    <td>6</td>
+                </tr>
+
+                <tr>
+                    <td>Temdan</td>
+                    <td>12</td>
+                    <td>55,362</td>
+                    <td>2.89<span class="bar" style="width:11.6px"></span></td>
+                    <td>$829,876</td>
+                    <td>2.57<span class="bar" style="width:10.3px;background:var(--acc2)"></span></td>
+                    <td>10</td>
+                </tr>
+
+                <tr>
+                    <td>JAME</td>
+                    <td>13</td>
+                    <td>34,790</td>
+                    <td>1.81<span class="bar" style="width:7.2px"></span></td>
+                    <td>$451,922</td>
+                    <td>1.4<span class="bar" style="width:5.6px;background:var(--acc2)"></span></td>
+                    <td>13</td>
+                </tr>
+
+                <tr>
+                    <td>ORNARTO</td>
+                    <td>14</td>
+                    <td>29,813</td>
+                    <td>1.55<span class="bar" style="width:6.2px"></span></td>
+                    <td>$326,580</td>
+                    <td>1.01<span class="bar" style="width:4.0px;background:var(--acc2)"></span></td>
+                    <td>17</td>
+                </tr>
+
+                <tr>
+                    <td>Mkeke</td>
+                    <td>15</td>
+                    <td>28,194</td>
+                    <td>1.47<span class="bar" style="width:5.9px"></span></td>
+                    <td>$267,561</td>
+                    <td>0.83<span class="bar" style="width:3.3px;background:var(--acc2)"></span></td>
+                    <td>19</td>
+                </tr>
+
+                <tr>
+                    <td>GVIEWIN</td>
+                    <td>16</td>
+                    <td>24,313</td>
+                    <td>1.27<span class="bar" style="width:5.1px"></span></td>
+                    <td>$337,708</td>
+                    <td>1.05<span class="bar" style="width:4.2px;background:var(--acc2)"></span></td>
+                    <td>15</td>
+                </tr>
+
+                <tr>
+                    <td>Yeddabox</td>
+                    <td>17</td>
+                    <td>18,826</td>
+                    <td>0.98<span class="bar" style="width:3.9px"></span></td>
+                    <td>$207,839</td>
+                    <td>0.64<span class="bar" style="width:2.6px;background:var(--acc2)"></span></td>
+                    <td>20</td>
+                </tr>
+
+                <tr>
+                    <td>Smartish</td>
+                    <td>18</td>
+                    <td>18,622</td>
+                    <td>0.97<span class="bar" style="width:3.9px"></span></td>
+                    <td>$372,254</td>
+                    <td>1.15<span class="bar" style="width:4.6px;background:var(--acc2)"></span></td>
+                    <td>14</td>
+                </tr>
+
+                <tr>
+                    <td>RMOCR</td>
+                    <td>19</td>
+                    <td>16,847</td>
+                    <td>0.88<span class="bar" style="width:3.5px"></span></td>
+                    <td>$182,621</td>
+                    <td>0.57<span class="bar" style="width:2.3px;background:var(--acc2)"></span></td>
+                    <td>24</td>
+                </tr>
+
+                <tr>
+                    <td>Newfuture</td>
+                    <td>20</td>
+                    <td>12,965</td>
+                    <td>0.68<span class="bar" style="width:2.7px"></span></td>
+                    <td>$194,345</td>
+                    <td>0.6<span class="bar" style="width:2.4px;background:var(--acc2)"></span></td>
+                    <td>23</td>
+                </tr>
+
+                <tr>
+                    <td>ETPESOK</td>
+                    <td>21</td>
+                    <td>11,094</td>
+                    <td>0.58<span class="bar" style="width:2.3px"></span></td>
+                    <td>$332,709</td>
+                    <td>1.03<span class="bar" style="width:4.1px;background:var(--acc2)"></span></td>
+                    <td>16</td>
+                </tr>
+
+                <tr>
+                    <td>Crave</td>
+                    <td>22</td>
+                    <td>11,022</td>
+                    <td>0.57<span class="bar" style="width:2.3px"></span></td>
+                    <td>$201,960</td>
+                    <td>0.63<span class="bar" style="width:2.5px;background:var(--acc2)"></span></td>
+                    <td>22</td>
+                </tr>
+
+                <tr>
+                    <td>SUPCASE</td>
+                    <td>23</td>
+                    <td>10,469</td>
+                    <td>0.55<span class="bar" style="width:2.2px"></span></td>
+                    <td>$285,071</td>
+                    <td>0.88<span class="bar" style="width:3.5px;background:var(--acc2)"></span></td>
+                    <td>18</td>
+                </tr>
+
+                <tr>
+                    <td>EYZUTAK</td>
+                    <td>24</td>
+                    <td>9,860</td>
+                    <td>0.51<span class="bar" style="width:2.0px"></span></td>
+                    <td>$88,641</td>
+                    <td>0.27<span class="bar" style="width:1.1px;background:var(--acc2)"></span></td>
+                    <td>31</td>
+                </tr>
+
+                <tr>
+                    <td>Hensinple</td>
+                    <td>25</td>
+                    <td>8,721</td>
+                    <td>0.45<span class="bar" style="width:1.8px"></span></td>
+                    <td>$104,565</td>
+                    <td>0.32<span class="bar" style="width:1.3px;background:var(--acc2)"></span></td>
+                    <td>30</td>
+                </tr>
+
+                <tr>
+                    <td>CASEKOO</td>
+                    <td>26</td>
+                    <td>8,394</td>
+                    <td>0.44<span class="bar" style="width:1.8px"></span></td>
+                    <td>$125,826</td>
+                    <td>0.39<span class="bar" style="width:1.6px;background:var(--acc2)"></span></td>
+                    <td>27</td>
+                </tr>
+
+                <tr>
+                    <td>VELVET CAVIAR</td>
+                    <td>27</td>
+                    <td>7,024</td>
+                    <td>0.37<span class="bar" style="width:1.5px"></span></td>
+                    <td>$203,626</td>
+                    <td>0.63<span class="bar" style="width:2.5px;background:var(--acc2)"></span></td>
+                    <td>21</td>
+                </tr>
+
+                <tr>
+                    <td>LeYi</td>
+                    <td>28</td>
+                    <td>5,758</td>
+                    <td>0.3<span class="bar" style="width:1.2px"></span></td>
+                    <td>$48,885</td>
+                    <td>0.15<span class="bar" style="width:0.6px;background:var(--acc2)"></span></td>
+                    <td>35</td>
+                </tr>
+
+                <tr>
+                    <td>CellEver</td>
+                    <td>29</td>
+                    <td>5,672</td>
+                    <td>0.3<span class="bar" style="width:1.2px"></span></td>
+                    <td>$113,383</td>
+                    <td>0.35<span class="bar" style="width:1.4px;background:var(--acc2)"></span></td>
+                    <td>29</td>
+                </tr>
+
+                <tr>
+                    <td>Oterkin</td>
+                    <td>30</td>
+                    <td>5,446</td>
+                    <td>0.28<span class="bar" style="width:1.1px"></span></td>
+                    <td>$117,035</td>
+                    <td>0.36<span class="bar" style="width:1.4px;background:var(--acc2)"></span></td>
+                    <td>28</td>
+                </tr>
+
+                <tr>
+                    <td>CHEDEMK</td>
+                    <td>31</td>
+                    <td>5,307</td>
+                    <td>0.28<span class="bar" style="width:1.1px"></span></td>
+                    <td>$52,699</td>
+                    <td>0.16<span class="bar" style="width:0.6px;background:var(--acc2)"></span></td>
+                    <td>33</td>
+                </tr>
+
+                <tr>
+                    <td>Fourmor</td>
+                    <td>32</td>
+                    <td>5,198</td>
+                    <td>0.27<span class="bar" style="width:1.1px"></span></td>
+                    <td>$88,314</td>
+                    <td>0.27<span class="bar" style="width:1.1px;background:var(--acc2)"></span></td>
+                    <td>32</td>
+                </tr>
+
+                <tr>
+                    <td>zapica</td>
+                    <td>33</td>
+                    <td>4,160</td>
+                    <td>0.22<span class="bar" style="width:0.9px"></span></td>
+                    <td>$33,238</td>
+                    <td>0.1<span class="bar" style="width:0.4px;background:var(--acc2)"></span></td>
+                    <td>40</td>
+                </tr>
+
+                <tr>
+                    <td>Ezanmull</td>
+                    <td>34</td>
+                    <td>2,876</td>
+                    <td>0.15<span class="bar" style="width:0.6px"></span></td>
+                    <td>$43,111</td>
+                    <td>0.13<span class="bar" style="width:0.5px;background:var(--acc2)"></span></td>
+                    <td>37</td>
+                </tr>
+
+                <tr>
+                    <td>ZAGG</td>
+                    <td>35</td>
+                    <td>2,843</td>
+                    <td>0.15<span class="bar" style="width:0.6px"></span></td>
+                    <td>$133,261</td>
+                    <td>0.41<span class="bar" style="width:1.6px;background:var(--acc2)"></span></td>
+                    <td>26</td>
+                </tr>
+
+                <tr>
+                    <td>DorisMax</td>
+                    <td>36</td>
+                    <td>2,831</td>
+                    <td>0.15<span class="bar" style="width:0.6px"></span></td>
+                    <td>$49,514</td>
+                    <td>0.15<span class="bar" style="width:0.6px;background:var(--acc2)"></span></td>
+                    <td>34</td>
+                </tr>
+
+                <tr>
+                    <td>KSELF</td>
+                    <td>37</td>
+                    <td>2,111</td>
+                    <td>0.11<span class="bar" style="width:0.4px"></span></td>
+                    <td>$42,199</td>
+                    <td>0.13<span class="bar" style="width:0.5px;background:var(--acc2)"></span></td>
+                    <td>38</td>
+                </tr>
+
+                <tr>
+                    <td>Mous</td>
+                    <td>38</td>
+                    <td>1,899</td>
+                    <td>0.1<span class="bar" style="width:0.4px"></span></td>
+                    <td>$142,406</td>
+                    <td>0.44<span class="bar" style="width:1.8px;background:var(--acc2)"></span></td>
+                    <td>25</td>
+                </tr>
+
+                <tr>
+                    <td>Speck</td>
+                    <td>39</td>
+                    <td>1,682</td>
+                    <td>0.09<span class="bar" style="width:0.4px"></span></td>
+                    <td>$31,083</td>
+                    <td>0.1<span class="bar" style="width:0.4px;background:var(--acc2)"></span></td>
+                    <td>41</td>
+                </tr>
+
+                <tr>
+                    <td>Cordking</td>
+                    <td>40</td>
+                    <td>1,653</td>
+                    <td>0.09<span class="bar" style="width:0.4px"></span></td>
+                    <td>$21,456</td>
+                    <td>0.07<span class="bar" style="width:0.3px;background:var(--acc2)"></span></td>
+                    <td>44</td>
+                </tr>
+
+                <tr>
+                    <td>RALEAVO</td>
+                    <td>41</td>
+                    <td>1,573</td>
+                    <td>0.08<span class="bar" style="width:0.3px"></span></td>
+                    <td>$12,568</td>
+                    <td>0.04<span class="bar" style="width:0.2px;background:var(--acc2)"></span></td>
+                    <td>49</td>
+                </tr>
+
+                <tr>
+                    <td>Generic</td>
+                    <td>42</td>
+                    <td>1,523</td>
+                    <td>0.08<span class="bar" style="width:0.3px"></span></td>
+                    <td>$28,368</td>
+                    <td>0.09<span class="bar" style="width:0.4px;background:var(--acc2)"></span></td>
+                    <td>42</td>
+                </tr>
+
+                <tr>
+                    <td>GolbinBox</td>
+                    <td>43</td>
+                    <td>1,472</td>
+                    <td>0.08<span class="bar" style="width:0.3px"></span></td>
+                    <td>$27,953</td>
+                    <td>0.09<span class="bar" style="width:0.4px;background:var(--acc2)"></span></td>
+                    <td>43</td>
+                </tr>
+
+                <tr>
+                    <td>OWKEY</td>
+                    <td>44</td>
+                    <td>1,088</td>
+                    <td>0.06<span class="bar" style="width:0.2px"></span></td>
+                    <td>$16,309</td>
+                    <td>0.05<span class="bar" style="width:0.2px;background:var(--acc2)"></span></td>
+                    <td>48</td>
+                </tr>
+
+                <tr>
+                    <td>MOFT</td>
+                    <td>45</td>
+                    <td>1,057</td>
+                    <td>0.06<span class="bar" style="width:0.2px"></span></td>
+                    <td>$44,912</td>
+                    <td>0.14<span class="bar" style="width:0.6px;background:var(--acc2)"></span></td>
+                    <td>36</td>
+                </tr>
+
+                <tr>
+                    <td>PHOOZY</td>
+                    <td>46</td>
+                    <td>964</td>
+                    <td>0.05<span class="bar" style="width:0.2px"></span></td>
+                    <td>$21,198</td>
+                    <td>0.07<span class="bar" style="width:0.3px;background:var(--acc2)"></span></td>
+                    <td>45</td>
+                </tr>
+
+                <tr>
+                    <td>Case-Mate</td>
+                    <td>47</td>
+                    <td>879</td>
+                    <td>0.05<span class="bar" style="width:0.2px"></span></td>
+                    <td>$40,803</td>
+                    <td>0.13<span class="bar" style="width:0.5px;background:var(--acc2)"></span></td>
+                    <td>39</td>
+                </tr>
+
+                <tr>
+                    <td>HTVRONT</td>
+                    <td>48</td>
+                    <td>802</td>
+                    <td>0.04<span class="bar" style="width:0.2px"></span></td>
+                    <td>$10,418</td>
+                    <td>0.03<span class="bar" style="width:0.1px;background:var(--acc2)"></span></td>
+                    <td>50</td>
+                </tr>
+
+                <tr>
+                    <td>SKMY</td>
+                    <td>49</td>
+                    <td>727</td>
+                    <td>0.04<span class="bar" style="width:0.2px"></span></td>
+                    <td>$7,255</td>
+                    <td>0.02<span class="bar" style="width:0.1px;background:var(--acc2)"></span></td>
+                    <td>51</td>
+                </tr>
+
+                <tr>
+                    <td>pitaka</td>
+                    <td>50</td>
+                    <td>660</td>
+                    <td>0.03<span class="bar" style="width:0.1px"></span></td>
+                    <td>$16,493</td>
+                    <td>0.05<span class="bar" style="width:0.2px;background:var(--acc2)"></span></td>
+                    <td>47</td>
+                </tr>
+
+                <tr>
+                    <td>LEIAU</td>
+                    <td>51</td>
+                    <td>598</td>
+                    <td>0.03<span class="bar" style="width:0.1px"></span></td>
+                    <td>$18,741</td>
+                    <td>0.06<span class="bar" style="width:0.2px;background:var(--acc2)"></span></td>
+                    <td>46</td>
+                </tr>
+
+                <tr>
+                    <td>IDweel</td>
+                    <td>52</td>
+                    <td>529</td>
+                    <td>0.03<span class="bar" style="width:0.1px"></span></td>
+                    <td>$4,957</td>
+                    <td>0.02<span class="bar" style="width:0.1px;background:var(--acc2)"></span></td>
+                    <td>53</td>
+                </tr>
+
+                <tr>
+                    <td>Mieziba</td>
+                    <td>53</td>
+                    <td>466</td>
+                    <td>0.02<span class="bar" style="width:0.1px"></span></td>
+                    <td>$6,985</td>
+                    <td>0.02<span class="bar" style="width:0.1px;background:var(--acc2)"></span></td>
+                    <td>52</td>
+                </tr>
+
+                <tr>
+                    <td>Guirble</td>
+                    <td>54</td>
+                    <td>362</td>
+                    <td>0.02<span class="bar" style="width:0.1px"></span></td>
+                    <td>$3,978</td>
+                    <td>0.01<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>55</td>
+                </tr>
+
+                <tr>
+                    <td>BENTOBEN</td>
+                    <td>55</td>
+                    <td>292</td>
+                    <td>0.02<span class="bar" style="width:0.1px"></span></td>
+                    <td>$2,917</td>
+                    <td>0.01<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>58</td>
+                </tr>
+
+                <tr>
+                    <td>CAPAUNVDA</td>
+                    <td>56</td>
+                    <td>204</td>
+                    <td>0.01<span class="bar" style="width:0.0px"></span></td>
+                    <td>$3,058</td>
+                    <td>0.01<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>57</td>
+                </tr>
+
+                <tr>
+                    <td>Simicoo</td>
+                    <td>57</td>
+                    <td>173</td>
+                    <td>0.01<span class="bar" style="width:0.0px"></span></td>
+                    <td>$3,977</td>
+                    <td>0.01<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>56</td>
+                </tr>
+
+                <tr>
+                    <td>Nakedcellphone</td>
+                    <td>58</td>
+                    <td>147</td>
+                    <td>0.01<span class="bar" style="width:0.0px"></span></td>
+                    <td>$2,786</td>
+                    <td>0.01<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>59</td>
+                </tr>
+
+                <tr>
+                    <td>Pelican</td>
+                    <td>59</td>
+                    <td>104</td>
+                    <td>0.01<span class="bar" style="width:0.0px"></span></td>
+                    <td>$4,155</td>
+                    <td>0.01<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>54</td>
+                </tr>
+
+                <tr>
+                    <td>Niuuro</td>
+                    <td>60</td>
+                    <td>89</td>
+                    <td>0.0<span class="bar" style="width:0.0px"></span></td>
+                    <td>$889</td>
+                    <td>0.0<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>61</td>
+                </tr>
+
+                <tr>
+                    <td>Changjia</td>
+                    <td>61</td>
+                    <td>56</td>
+                    <td>0.0<span class="bar" style="width:0.0px"></span></td>
+                    <td>$895</td>
+                    <td>0.0<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>60</td>
+                </tr>
+
+                <tr>
+                    <td>HYUEKOKO</td>
+                    <td>62</td>
+                    <td>44</td>
+                    <td>0.0<span class="bar" style="width:0.0px"></span></td>
+                    <td>$352</td>
+                    <td>0.0<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>63</td>
+                </tr>
+
+                <tr>
+                    <td>FDTCYDS</td>
+                    <td>63</td>
+                    <td>36</td>
+                    <td>0.0<span class="bar" style="width:0.0px"></span></td>
+                    <td>$468</td>
+                    <td>0.0<span class="bar" style="width:0.0px;background:var(--acc2)"></span></td>
+                    <td>62</td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <p class="note">
+            <span class="hl">要点：</span>TOP10 品牌拿走约 <span class="hl">77.7%</span> 的销量、
+            TOP5 拿走 <span class="hl">61.7%</span> 的 GMV，头部格局稳固；
+            OtterBox 销量与 GMV 双双第一，部分品牌（如 Miracase、TORRAS）销量排名与 GMV 排名错位明显，指向高价定位差异。
+        </p>
+    </section>
+
+    <!-- 上架时间分布 -->
+    <section>
+        <div class="h"><i></i>
+            <h2>三、上架时间分布</h2></div>
+        <p class="sub">各月新上架商品数（柱）与累计上架数（折线）</p>
+        <div id="c_listing" class="chart"></div>
+        <p class="note">
+            <span class="hl">要点：</span>2024 年下半年起新上架显著提速，
+            <span class="hl">2026-09</span> 当月新上架 <span class="hl">1</span> 款、
+            当月累计上架 <span class="hl">170</span> 款；峰值出现在 <span class="hl">2025-09</span>（20 款），
+            近 12 个月合计新上架 31 款，行业供给仍在快速涌入。
+        </p>
+    </section>
+
+    <footer>
+        数据来源：industry_chart_data.csv ｜ 由 pandas 处理、ECharts 5.5 渲染、Jinja2 模板生成<br>
+        份额类指标为样本内占比；GMV 单位为美元，销量为月销量（统计口径以源数据为准）
+    </footer>
+</div>
+
+<script>
+    const C = {
+        txt: '#e6ebf5', sub: '#8c9ab2', line: '#26314a',
+        acc: '#4f8cff', acc2: '#22c58b', warn: '#ffb020', pink: '#ff6b9d', cyan: '#39d0e6'
+    };
+    const baseGrid = {left: 56, right: 60, top: 56, bottom: 40, containLabel: true};
+    const AX = {
+        axisLine: {lineStyle: {color: C.line}},
+        axisLabel: {color: C.sub},
+        splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+    };
+    const tooltipStyle = {backgroundColor: '#111a2b', borderColor: C.line, textStyle: {color: C.txt}};
+
+    /* ===== 价格分布 ===== */
+    const P = {
+        "avg_monthly_sales": [17783.5, 16173.8, 4435.5, 11028.7, 4643.9, 5584.0, 9240.4, 6328.9],
+        "avg_rating": [4.55, 4.5, 4.52, 4.46, 4.51, 4.37, 4.36, 4.42],
+        "labels": ["5\u201310", "10\u201315", "15\u201320", "20\u201325", "25\u201330", "30\u201335", "35\u201340", "\u226540"],
+        "monthly_revenue": [6163566, 8440890, 2681609, 5645532, 1842237, 1020331, 1681455, 4489206],
+        "monthly_sales": [675774, 614603, 146370, 253659, 65014, 27920, 46202, 88605],
+        "product_count": [38, 38, 33, 23, 14, 6, 5, 14],
+        "rating_score": [91.05, 90.05, 90.36, 89.22, 90.14, 87.33, 87.2, 88.43],
+        "revenue_share": [19.28, 26.41, 8.39, 17.66, 5.76, 3.19, 5.26, 14.04],
+        "sales_share": [35.23, 32.04, 7.63, 13.22, 3.39, 1.46, 2.41, 4.62]
+    };
+    echarts.init(document.getElementById('c_price_bar')).setOption({
+        title: {text: '商品数 vs 月销量（按价格带）', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {trigger: 'axis', ...tooltipStyle, axisPointer: {type: 'shadow'}},
+        legend: {data: ['商品数', '月销量'], top: 26, textStyle: {color: C.sub}},
+        grid: baseGrid, xAxis: {type: 'category', data: P.labels, axisLabel: {color: C.sub, rotate: 0}},
+        yAxis: [{
+            type: 'value',
+            name: '商品数',
+            axisLabel: {color: C.sub},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+            {type: 'value', name: '月销量', axisLabel: {color: C.sub}, splitLine: {show: false}}],
+        series: [
+            {
+                name: '商品数',
+                type: 'bar',
+                data: P.product_count,
+                itemStyle: {color: C.acc, borderRadius: [4, 4, 0, 0]},
+                barWidth: '42%'
+            },
+            {
+                name: '月销量',
+                type: 'line',
+                yAxisIndex: 1,
+                smooth: true,
+                data: P.monthly_sales,
+                itemStyle: {color: C.warn},
+                lineStyle: {width: 3},
+                symbolSize: 8
+            }
+        ]
+    });
+    echarts.init(document.getElementById('c_price_share')).setOption({
+        title: {text: '销量份额 vs GMV份额', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {trigger: 'axis', ...tooltipStyle, valueFormatter: v => v + '%'},
+        legend: {data: ['销量份额', 'GMV份额'], top: 26, textStyle: {color: C.sub}},
+        grid: baseGrid, xAxis: {type: 'category', data: P.labels, axisLabel: {color: C.sub}},
+        yAxis: {
+            type: 'value',
+            axisLabel: {color: C.sub, formatter: '{value}%'},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+        series: [
+            {
+                name: '销量份额',
+                type: 'bar',
+                data: P.sales_share,
+                itemStyle: {color: C.acc2, borderRadius: [4, 4, 0, 0]},
+                barWidth: '34%'
+            },
+            {
+                name: 'GMV份额',
+                type: 'bar',
+                data: P.revenue_share,
+                itemStyle: {color: C.pink, borderRadius: [4, 4, 0, 0]},
+                barWidth: '34%'
+            }
+        ]
+    });
+    echarts.init(document.getElementById('c_price_mix')).setOption({
+        title: {text: '均价 与 平均评分（双轴）', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {trigger: 'axis', ...tooltipStyle},
+        legend: {data: ['平均月销量', '平均评分'], top: 26, textStyle: {color: C.sub}},
+        grid: baseGrid, xAxis: {type: 'category', data: P.labels, axisLabel: {color: C.sub}},
+        yAxis: [{
+            type: 'value',
+            name: '平均月销量',
+            axisLabel: {color: C.sub},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+            {
+                type: 'value',
+                name: '评分',
+                min: 4,
+                max: 4.7,
+                axisLabel: {color: C.sub, formatter: '{value}'},
+                splitLine: {show: false}
+            }],
+        series: [
+            {
+                name: '平均月销量',
+                type: 'bar',
+                data: P.avg_monthly_sales,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#4f8cff'
+                    }, {offset: 1, color: '#2a5cbf'}]), borderRadius: [4, 4, 0, 0]
+                },
+                barWidth: '46%'
+            },
+            {
+                name: '平均评分',
+                type: 'line',
+                yAxisIndex: 1,
+                smooth: true,
+                data: P.avg_rating,
+                itemStyle: {color: C.warn},
+                lineStyle: {width: 3},
+                symbolSize: 9,
+                markLine: {
+                    silent: true,
+                    data: [{type: 'average', name: '均值'}],
+                    lineStyle: {color: C.warn, type: 'dashed'},
+                    label: {color: C.warn}
+                }
+            }
+        ]
+    });
+
+    /* ===== 品牌集中度 ===== */
+    const B = {
+        "names": ["OtterBox", "FNTCASE", "SUPFINE", "ESR", "Miracase", "Spigen", "SuydanBox", "jaroco", "TAURI", "JETech", "TORRAS", "Temdan", "JAME", "ORNARTO", "Mkeke", "GVIEWIN", "Yeddabox", "Smartish", "RMOCR", "Newfuture", "ETPESOK", "Crave", "SUPCASE", "EYZUTAK", "Hensinple", "CASEKOO", "VELVET CAVIAR", "LeYi", "CellEver", "Oterkin", "CHEDEMK", "Fourmor", "zapica", "Ezanmull", "ZAGG", "DorisMax", "KSELF", "Mous", "Speck", "Cordking", "RALEAVO", "Generic", "GolbinBox", "OWKEY", "MOFT", "PHOOZY", "Case-Mate", "HTVRONT", "SKMY", "pitaka", "LEIAU", "IDweel", "Mieziba", "Guirble", "BENTOBEN", "CAPAUNVDA", "Simicoo", "Nakedcellphone", "Pelican", "Niuuro", "Changjia", "HYUEKOKO", "FDTCYDS"],
+        "revenue": [8164484, 3060763, 2098110, 3002797, 3596729, 1671728, 1102864, 989046, 497826, 707599, 1672881, 829876, 451922, 326580, 267561, 337708, 207839, 372254, 182621, 194345, 332709, 201960, 285071, 88641, 104565, 125826, 203626, 48885, 113383, 117035, 52699, 88314, 33238, 43111, 133261, 49514, 42199, 142406, 31083, 21456, 12568, 28368, 27953, 16309, 44912, 21198, 40803, 10418, 7255, 16493, 18741, 4957, 6985, 3978, 2917, 3058, 3977, 2786, 4155, 889, 895, 352, 468],
+        "revenue_cum": [25.3, 45.92, 61.73, 55.23, 36.44, 72.09, 75.51, 78.57, 84.88, 83.34, 66.91, 81.14, 86.28, 90.52, 92.23, 88.48, 92.88, 87.43, 95.3, 94.74, 89.51, 94.13, 91.41, 97.86, 97.58, 96.55, 93.51, 98.6, 97.26, 96.91, 98.3, 98.13, 99.23, 98.87, 96.16, 98.45, 99.0, 95.74, 99.33, 99.57, 99.84, 99.42, 99.5, 99.8, 98.74, 99.64, 99.13, 99.87, 99.89, 99.75, 99.69, 99.93, 99.91, 99.95, 99.98, 99.97, 99.96, 99.99, 99.94, 100.0, 99.99, 100.0, 100.0],
+        "revenue_share": [25.3, 9.48, 6.5, 9.3, 11.14, 5.18, 3.42, 3.06, 1.54, 2.19, 5.18, 2.57, 1.4, 1.01, 0.83, 1.05, 0.64, 1.15, 0.57, 0.6, 1.03, 0.63, 0.88, 0.27, 0.32, 0.39, 0.63, 0.15, 0.35, 0.36, 0.16, 0.27, 0.1, 0.13, 0.41, 0.15, 0.13, 0.44, 0.1, 0.07, 0.04, 0.09, 0.09, 0.05, 0.14, 0.07, 0.13, 0.03, 0.02, 0.05, 0.06, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0],
+        "sales": [275734, 267160, 210021, 187129, 168544, 96586, 76641, 73317, 68040, 67760, 59618, 55362, 34790, 29813, 28194, 24313, 18826, 18622, 16847, 12965, 11094, 11022, 10469, 9860, 8721, 8394, 7024, 5758, 5672, 5446, 5307, 5198, 4160, 2876, 2843, 2831, 2111, 1899, 1682, 1653, 1573, 1523, 1472, 1088, 1057, 964, 879, 802, 727, 660, 598, 529, 466, 362, 292, 204, 173, 147, 104, 89, 56, 44, 36],
+        "sales_cum": [14.38, 28.3, 39.25, 49.01, 57.79, 62.83, 66.83, 70.65, 74.2, 77.73, 80.84, 83.72, 85.54, 87.09, 88.56, 89.83, 90.81, 91.78, 92.66, 93.33, 93.91, 94.49, 95.03, 95.55, 96.0, 96.44, 96.81, 97.11, 97.4, 97.69, 97.96, 98.23, 98.45, 98.6, 98.75, 98.9, 99.01, 99.1, 99.19, 99.28, 99.36, 99.44, 99.52, 99.57, 99.63, 99.68, 99.72, 99.77, 99.8, 99.84, 99.87, 99.9, 99.92, 99.94, 99.96, 99.97, 99.98, 99.98, 99.99, 99.99, 100.0, 100.0, 100.0],
+        "sales_share": [14.38, 13.93, 10.95, 9.76, 8.79, 5.04, 4.0, 3.82, 3.55, 3.53, 3.11, 2.89, 1.81, 1.55, 1.47, 1.27, 0.98, 0.97, 0.88, 0.68, 0.58, 0.57, 0.55, 0.51, 0.45, 0.44, 0.37, 0.3, 0.3, 0.28, 0.28, 0.27, 0.22, 0.15, 0.15, 0.15, 0.11, 0.1, 0.09, 0.09, 0.08, 0.08, 0.08, 0.06, 0.06, 0.05, 0.05, 0.04, 0.04, 0.03, 0.03, 0.03, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0]
+    };
+    echarts.init(document.getElementById('c_brand_cum')).setOption({
+        title: {text: '累计份额曲线（洛伦兹曲线）', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {trigger: 'axis', ...tooltipStyle, valueFormatter: v => v + '%'},
+        legend: {data: ['累计销量份额', '累计GMV份额'], top: 26, textStyle: {color: C.sub}},
+        grid: {left: 56, right: 60, top: 60, bottom: 40, containLabel: true},
+        xAxis: {
+            type: 'category',
+            data: B.names,
+            axisLabel: {color: C.sub, interval: Math.ceil(B.names.length / 14) - 1, rotate: 30},
+            boundaryGap: false
+        },
+        yAxis: {
+            type: 'value',
+            max: 100,
+            axisLabel: {color: C.sub, formatter: '{value}%'},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+        series: [
+            {
+                name: '累计销量份额',
+                type: 'line',
+                smooth: true,
+                data: B.sales_cum,
+                itemStyle: {color: C.acc},
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: 'rgba(79,140,255,.35)'
+                    }, {offset: 1, color: 'rgba(79,140,255,0)'}])
+                },
+                lineStyle: {width: 2.5},
+                symbol: 'none'
+            },
+            {
+                name: '累计GMV份额',
+                type: 'line',
+                smooth: true,
+                data: B.revenue_cum,
+                itemStyle: {color: C.acc2},
+                lineStyle: {width: 2.5},
+                symbol: 'none'
+            }
+        ]
+    });
+    echarts.init(document.getElementById('c_brand_share')).setOption({
+        title: {text: '品牌销量份额（横向）', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {trigger: 'axis', ...tooltipStyle, valueFormatter: v => v + '%'},
+        grid: {left: 10, right: 70, top: 44, bottom: 20, containLabel: true},
+        xAxis: {
+            type: 'value',
+            axisLabel: {color: C.sub, formatter: '{value}%'},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+        yAxis: {type: 'category', inverse: true, data: B.names, axisLabel: {color: C.sub, fontSize: 11}},
+        series: [{
+            type: 'bar', data: B.sales_share, barWidth: '62%',
+            itemStyle: {
+                borderRadius: [0, 4, 4, 0],
+                color: p => new echarts.graphic.LinearGradient(0, 0, 1, 0, [{offset: 0, color: '#2a5cbf'}, {
+                    offset: 1,
+                    color: p.dataIndex < 5 ? '#ffb020' : '#4f8cff'
+                }])
+            },
+            label: {show: true, position: 'right', color: C.sub, fontSize: 10, formatter: '{c}%'}
+        }]
+    });
+    echarts.init(document.getElementById('c_brand_scatter')).setOption({
+        title: {text: '销量 vs GMV 散点（气泡=销量份额）', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {
+            ...tooltipStyle,
+            formatter: p => `<b>${p.data[3]}</b><br>月销量: ${p.data[0].toLocaleString()}<br>GMV: $${p.data[1].toLocaleString()}<br>销量份额: ${p.data[2]}%`
+        },
+        grid: baseGrid,
+        xAxis: {
+            type: 'value',
+            name: '月销量',
+            axisLabel: {color: C.sub},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+        yAxis: {
+            type: 'value',
+            name: '月GMV',
+            axisLabel: {color: C.sub, formatter: v => '$' + (v / 1000) + 'k'},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+        series: [{
+            type: 'scatter',
+            data: B.names.map((n, i) => [B.sales[i], B.revenue[i], B.sales_share[i], n]),
+            symbolSize: d => Math.max(8, Math.sqrt(d[0]) / 6),
+            itemStyle: {
+                color: p => p.dataIndex < 5 ? '#ffb020' : (p.dataIndex < 10 ? '#ff6b9d' : '#4f8cff'),
+                opacity: .75
+            }
+        }]
+    });
+
+    /* ===== 上架时间分布 ===== */
+    const L = {
+        "cumulative": [1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10, 10, 11, 11, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 26, 26, 26, 26, 26, 27, 27, 28, 28, 28, 29, 33, 34, 35, 35, 35, 35, 38, 38, 38, 38, 39, 40, 45, 56, 59, 59, 61, 62, 62, 63, 64, 65, 67, 69, 71, 86, 88, 91, 92, 95, 97, 99, 103, 106, 107, 110, 119, 139, 142, 145, 149, 152, 160, 162, 163, 164, 165, 167, 169, 170],
+        "months": ["2016-08", "2016-09", "2016-10", "2016-11", "2016-12", "2017-01", "2017-02", "2017-03", "2017-04", "2017-05", "2017-06", "2017-07", "2017-08", "2017-09", "2017-10", "2017-11", "2017-12", "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12", "2019-01", "2019-02", "2019-03", "2019-04", "2019-05", "2019-06", "2019-07", "2019-08", "2019-09", "2019-10", "2019-11", "2019-12", "2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06", "2020-07", "2020-08", "2020-09", "2020-10", "2020-11", "2020-12", "2021-01", "2021-02", "2021-03", "2021-04", "2021-05", "2021-06", "2021-07", "2021-08", "2021-09", "2021-10", "2021-11", "2021-12", "2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06", "2022-07", "2022-08", "2022-09", "2022-10", "2022-11", "2022-12", "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+        "product_count": [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 8, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 4, 1, 1, 0, 0, 0, 3, 0, 0, 0, 1, 1, 5, 11, 3, 0, 2, 1, 0, 1, 1, 1, 2, 2, 2, 15, 2, 3, 1, 3, 2, 2, 4, 3, 1, 3, 9, 20, 3, 3, 4, 3, 8, 2, 1, 1, 1, 2, 2, 1],
+        "sample_share": [0.59, 1.76, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.59, 0.0, 0.0, 0.0, 0.59, 0.0, 0.0, 0.0, 0.0, 0.59, 0.0, 0.59, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.59, 0.0, 0.59, 0.0, 0.0, 0.0, 0.59, 0.0, 2.94, 0.0, 0.0, 0.0, 0.59, 0.0, 0.0, 0.0, 0.0, 0.0, 0.59, 4.71, 0.0, 0.0, 0.0, 0.0, 0.59, 0.0, 0.59, 0.0, 0.0, 0.59, 2.35, 0.59, 0.59, 0.0, 0.0, 0.0, 1.76, 0.0, 0.0, 0.0, 0.59, 0.59, 2.94, 6.47, 1.76, 0.0, 1.18, 0.59, 0.0, 0.59, 0.59, 0.59, 1.18, 1.18, 1.18, 8.82, 1.18, 1.76, 0.59, 1.76, 1.18, 1.18, 2.35, 1.76, 0.59, 1.76, 5.29, 11.76, 1.76, 1.76, 2.35, 1.76, 4.71, 1.18, 0.59, 0.59, 0.59, 1.18, 1.18, 0.59]
+    };
+    echarts.init(document.getElementById('c_listing')).setOption({
+        title: {text: '各月上架商品数 与 累计上架数', left: 'center', textStyle: {color: C.txt, fontSize: 14}},
+        tooltip: {trigger: 'axis', ...tooltipStyle, axisPointer: {type: 'shadow'}},
+        legend: {data: ['当月上架数', '累计上架数'], top: 26, textStyle: {color: C.sub}},
+        grid: {left: 56, right: 60, top: 60, bottom: 60, containLabel: true},
+        xAxis: {
+            type: 'category',
+            data: L.months,
+            axisLabel: {color: C.sub, interval: Math.ceil(L.months.length / 16) - 1, rotate: 35}
+        },
+        yAxis: [{
+            type: 'value',
+            name: '当月上架',
+            axisLabel: {color: C.sub},
+            splitLine: {lineStyle: {color: C.line, type: 'dashed'}}
+        },
+            {type: 'value', name: '累计上架', axisLabel: {color: C.sub}, splitLine: {show: false}}],
+        series: [
+            {
+                name: '当月上架数',
+                type: 'bar',
+                data: L.product_count,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#39d0e6'
+                    }, {offset: 1, color: '#1a6f7c'}]), borderRadius: [4, 4, 0, 0]
+                },
+                barWidth: '58%'
+            },
+            {
+                name: '累计上架数',
+                type: 'line',
+                yAxisIndex: 1,
+                smooth: true,
+                data: L.cumulative,
+                itemStyle: {color: C.pink},
+                lineStyle: {width: 2.5},
+                symbol: 'none'
+            }
+        ]
+    });
+
+    /* ===== 表格排序 ===== */
+    document.querySelectorAll('#brand_table th').forEach(th => {
+        let asc = true;
+        th.addEventListener('click', () => {
+            const k = th.dataset.k, tbody = th.closest('table').tBodies[0];
+            const rows = [...tbody.rows];
+            rows.sort((a, b) => {
+                let x = a.cells[th.cellIndex].textContent.replace(/[$,%]/g, ''),
+                    y = b.cells[th.cellIndex].textContent.replace(/[$,%]/g, '');
+                return asc ? (parseFloat(x) - parseFloat(y)) : (parseFloat(y) - parseFloat(x));
+            });
+            asc = !asc;
+            rows.forEach(r => tbody.appendChild(r));
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        document.querySelectorAll('.chart').forEach(el => {
+            const c = echarts.getInstanceByDom(el);
+            c && c.resize();
+        });
+    });
+</script>
+</body>
+</html>
